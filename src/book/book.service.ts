@@ -1,6 +1,6 @@
 import { UpdateBookDto } from './dto/update-book.dto';
 import { CreateBookDto } from './dto/create-book.dto';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Get, Inject, Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { Book } from './entities/book.entity';
 
@@ -13,9 +13,13 @@ export class BookService {
   @Inject()
   dbService: DbService;
 
-  async list() {
+  async list(name: string) {
     const books: Book[] = await this.dbService.read();
-    return books;
+    return name
+      ? books.filter((book) => {
+          return book.name.includes(name);
+        })
+      : books;
   }
 
   async findById(id: number) {
